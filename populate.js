@@ -1,23 +1,17 @@
 var fs = require('fs');
 var mongoose = require('mongoose');
-
-//This code requires mongoose node module
-var mongoose = require('mongoose');
-
-//connecting local mongodb database named test
 var db = mongoose.connect('mongodb://127.0.0.1:27017/geolocation');
+var Coord = require('./mongo/coord');
+var Converter = require("csvtojson").Converter;
 
-//testing connectivity
+console.time('Time');
 mongoose.connection.once('connected', function() {
 	console.log("Database connected successfully")
 });
 
-var Coord = require('./mongo/coord');
 
-var Converter = require("csvtojson").Converter;
 var converter = new Converter({});
 converter.fromFile("./ecs_rs.csv",function(err,result){
-
 	var geolibCoords = [];
 	result.forEach(function(item, key){
 	  if(item.NR_LONGITUDE != '(null)' && item.NR_LATITUDE != '(null)'){
@@ -32,8 +26,6 @@ converter.fromFile("./ecs_rs.csv",function(err,result){
 	      coordCollection[key].name = coord.name;
 	      coordCollection[key].type = '123';
 	      coordCollection[key].geo = [ coord.longitude, coord.latitude ];
-
-				console.log(key);
 	    });
 
 			Coord.collection.insert(coordCollection, function(err, docs){
@@ -42,6 +34,7 @@ converter.fromFile("./ecs_rs.csv",function(err,result){
 				}
 				else{
 					console.log('Success');
+					console.timeEnd('Time');
 				}
 			})
 	})
