@@ -16,23 +16,21 @@ console.log(geolibCoords.length);
 baselineCoords = geolibCoords;
 
 var count = 0;
+console.time('query');
 geolibCoords.forEach(function(coord, key){
-  console.time('query');
-    coord.nearCoords = [];
-    console.log(key);
+  coord.nearCoords = [];
 
-    baselineCoords.forEach(function(item, index){
-      if(key !== index){
-        if(geolib.isPointInCircle(item, coord, 100000)){
-          coord.nearCoords.push(item);
-          count++;
-          console.log(item, index);
-        }
+  baselineCoords.forEach(function(item, index){
+    if(key !== index){
+      if(geolib.isPointInCircle(item, coord, 100000)){
+        coord.nearCoords.push(item);
+        count++;
       }
-    })
-  console.log(count);
+    }
+  })
   console.timeEnd('query');
 });
+console.timeEnd('query');
 
 // var i = 0;
 // geolibCoords.forEach(function(item, key){

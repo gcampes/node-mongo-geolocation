@@ -20,6 +20,7 @@ var fetchInRange = new Promise(function (resolve, reject) {
 	Coord.find().exec(function(err, coordinates){
 	  console.log('City.length: ' + coordinates.length);
 		startTime = new Date().getTime();
+		console.timeEnd('stopwatch');
 	  coordinates.forEach(function(coordinate, key){
 	      coords[0] = coordinate.geo[0];
 	      coords[1] = coordinate.geo[1];
@@ -41,7 +42,6 @@ var fetchInRange = new Promise(function (resolve, reject) {
 						geo: coordinate.geo,
 						nearCoords: []
 					};
-					console.log(locations);
 					locations.forEach(function(nearCoord){
 						if(nearCoord._id.toString() != tempCoord.id.toString()){
 							tempCoord.nearCoords.push({
@@ -52,13 +52,9 @@ var fetchInRange = new Promise(function (resolve, reject) {
 							});
 						}
 					});
-
 					// console.log(tempCoord);
 	        // console.log('Current Location:' + coordinate.name);
 	        count++;
-					// console.log(locations);
-					// console.log(coordinates.length, count);
-					// console.log(tempCoord.nearCoords);
 					output.push(tempCoord);
 					if(coordinates.length === count){
 						// console.log(output.length);
@@ -70,26 +66,27 @@ var fetchInRange = new Promise(function (resolve, reject) {
 });
 
 fetchInRange.then(function(coordinates){
-
+	console.timeEnd('stopwatch');
 	var calculateChildrenDistance = new Promise(function (resolve, reject) {
 		coordinates.forEach(function(coordinate, parentKey){
-			coordinate.forEach(function(childCoord, childKey){
-				childCoord.distance = geolib.getDistance(coordinate.geo, childCoord.geo);
-				console.log(childCoord.distance);
 
-				if(parentKey == coordinates.length && coordinate.nearCoords.length == childKey)
+			coordinate.nearCoords.forEach(function(childCoord, childKey){
+				childCoord.distance = geolib.getDistance(coordinate.geo, childCoord.geo);
+				console.log(coordinate);
+				if((parentKey + 1) == coordinates.length && coordinate.nearCoords.length == (childKey + 1)){
+					console.log('done with this');
 					resolve();
-			})
+				}
+			});
 		});
 	});
 
 	calculateChildrenDistance.then(function(){
 		console.log('RESOLVE - calculateChildrenDistance');
+		console.timeEnd('stopwatch');
 	}, function(){
 		console.log('FAIL - calculateChildrenDistance');
 	});
-
-	console.timeEnd('stopwatch');
 	console.log('RESOLVE - fetchInRange');
 }, function(){
 	console.log('FAIL - fetchInRange');
