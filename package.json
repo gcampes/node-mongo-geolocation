@@ -10,6 +10,7 @@
   "license": "ISC",
   "devDependencies": {
     "clone": "^1.0.2",
+    "csvtojson": "^0.5.1",
     "geolib": "^2.0.18",
     "mongoose": "^4.3.4",
     "promise": "^7.1.1"

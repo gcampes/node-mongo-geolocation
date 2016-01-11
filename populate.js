@@ -14,34 +14,35 @@ mongoose.connection.once('connected', function() {
 
 var Coord = require('./mongo/coord');
 
-var coordObj = JSON.parse(fs.readFileSync('coords.json', 'utf8'));
-var geolibCoords = [];
-coordObj.forEach(function(item, key){
-  if(item.lat && item.lon){
-    geolibCoords.push({longitude:item.lon, latitude: item.lat, name: item.name, type: item.type});
-  }
+var Converter = require("csvtojson").Converter;
+var converter = new Converter({});
+converter.fromFile("./ecs_rs.csv",function(err,result){
+
+	var geolibCoords = [];
+	result.forEach(function(item, key){
+	  if(item.NR_LONGITUDE != '(null)' && item.NR_LATITUDE != '(null)'){
+	    geolibCoords.push({longitude:item.NR_LONGITUDE, latitude: item.NR_LATITUDE, name: item.DS_CIDADE, type: item.type});
+	  }
+	});
+
+	var coordCollection = [];
+	Coord.remove({}, function(){
+	    geolibCoords.forEach(function(coord, key){
+	      coordCollection[key] = {};
+	      coordCollection[key].name = coord.name;
+	      coordCollection[key].type = '123';
+	      coordCollection[key].geo = [ coord.longitude, coord.latitude ];
+
+				console.log(key);
+	    });
+
+			Coord.collection.insert(coordCollection, function(err, docs){
+				if(err){
+					console.log(err);
+				}
+				else{
+					console.log('Success');
+				}
+			})
+	})
 });
-
-var coordModel = null;
-
-console.log(geolibCoords.length);
-
-Coord.remove({}, function(){
-    geolibCoords.forEach(function(coord, key){
-      coordModel = new Coord();
-      coordModel.name = coord.name;
-      coordModel.type = coord.type;
-      coordModel.geo = [ coord.longitude, coord.latitude ];
-
-      coordModel.save(function (err, coordinate) {
-        if (err){
-          console.log(err);
-        }
-        else{
-          console.log('saved');
-          console.log(coordinate);
-          console.log(geolibCoords.length);
-        }
-      });
-    });
-})

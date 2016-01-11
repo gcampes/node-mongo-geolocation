@@ -13,7 +13,7 @@ var fetchCoordinates = new Promise(function(resolve, reject){
   var result = [];
   Coord.find().exec(function(err, coordinates){
     coordinates.forEach(function(coordinate, key){
-      // console.log(key, coordinates.length);
+      console.log(key, coordinates.length);
       result.push({
         id: coordinate._id,
         name: coordinate.name,
@@ -25,7 +25,7 @@ var fetchCoordinates = new Promise(function(resolve, reject){
       Coord.find({
         geo: {
           $nearSphere: coordinate.geo,
-          $maxDistance: 200 / 6371
+          $maxDistance: 2 / 6371
         }
       }).exec(function(err, coords){
         coords.forEach(function(coord, coordsKey){
