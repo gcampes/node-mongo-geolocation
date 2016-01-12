@@ -4,6 +4,7 @@ var Schema = mongoose.Schema;
 var CitySchema = new Schema({
   name: String,
   type: String,
+  cd_estabelecimento: String,
 
   geo: {
     type: [Number],
@@ -11,4 +12,4 @@ var CitySchema = new Schema({
   }
 });
 
-module.exports = mongoose.model('Coord', CitySchema);
+module.exports = mongoose.model('Point', CitySchema);

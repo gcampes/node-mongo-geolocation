@@ -15,7 +15,7 @@ converter.fromFile("./ecs_rs.csv",function(err,result){
 	var geolibCoords = [];
 	result.forEach(function(item, key){
 	  if(item.NR_LONGITUDE != '(null)' && item.NR_LATITUDE != '(null)'){
-	    geolibCoords.push({longitude:item.NR_LONGITUDE, latitude: item.NR_LATITUDE, name: item.DS_CIDADE, type: item.type});
+	    geolibCoords.push({longitude:item.NR_LONGITUDE, latitude: item.NR_LATITUDE, name: item.DS_CIDADE, id: item.CD_ESTABELECIMENTO});
 	  }
 	});
 
@@ -23,8 +23,9 @@ converter.fromFile("./ecs_rs.csv",function(err,result){
 	Coord.remove({}, function(){
 	    geolibCoords.forEach(function(coord, key){
 	      coordCollection[key] = {};
+				coordCollection[key].cd_estabelecimento = coord.id;
 	      coordCollection[key].name = coord.name;
-	      coordCollection[key].type = '123';
+	      coordCollection[key].type = '234';
 	      coordCollection[key].geo = [ coord.longitude, coord.latitude ];
 	    });
 
